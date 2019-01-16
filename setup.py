@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name='nis',
+    name='nis-client',
     version='0.1',
     packages=['nis'],
     install_requires=['typing', 'requests', 'pandas'],
