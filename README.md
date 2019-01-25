@@ -9,10 +9,10 @@ inside project MAGIC (H2020 grant 689669).
 
 ### Basic Usage
 ```python
-from nis.client import NISClient
+from nis import NISClient
 
 c = NISClient("http://localhost:5000/nis_api") # Construct client
-c.login("default_user")  # Login, using default user
+c.login("test_user")  # Login, using test user
 c.open_session()  # Open a session (needed before submission)
 fname = "<path to XLSX specifying a case study (accessible to the Python interpreter executing this script)>"
 c.load_workbook(fname)  # Load a workbook (see DMP's annex "Case study formatting reference") 
@@ -42,6 +42,7 @@ c.logout()
 
 ### Prerequisites
 
+* Python 3.x
 * A NIS backend instance has to be running and accessible. The URL of the API is the required parameter for the construction of the client
 
 ### Installing
@@ -58,6 +59,6 @@ This project is licensed under the BSD-3 License - see the [LICENSE.md](LICENSE.
 
 ## Acknowledgements
 
-* The development of this software was supported by the European Union’s Horizon 2020 research and innovation programme
+The development of this software was supported by the European Union’s Horizon 2020 research and innovation programme
 under Grant Agreement No. 689669 (MAGIC). This work reflects the authors' view only; the funding agencies are not 
 responsible for any use that may be made of the information it contains.
