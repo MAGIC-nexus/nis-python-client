@@ -125,7 +125,7 @@ class NISClient:
 
         return self._state == NISClientState.LOGGED_OUT
 
-    def open_session(self):
+    def open_session(self, reset_commands=False):
         uuid = None
         read_version_state = False
         create_new = True
@@ -157,8 +157,9 @@ class NISClient:
         else:
             raise Exception("Could not open session")
 
-        # Clear dataframes
-        self.reset_commands()
+        if reset_commands:
+            # Clear dataframes
+            self.reset_commands()
 
         return self._state == NISClientState.SESSION_INITIATED
 
@@ -283,6 +284,9 @@ class NISClient:
         elif self._state == NISClientState.LOGGED_IN:
             raise Exception("Call 'open_session' before submitting")
 
+        if len(self._dataframes) == 0:
+            raise Exception("The list of dataframes is empty. Cannot submit.")
+
         # Convert dataframes to workbook
         xlsx = self._generate_in_memory_excel()
         # f = open("/home/rnebot/prueba.xlsx", "wb")
@@ -331,8 +335,18 @@ class NISClient:
             format = "csv"
             r = self._req_client.get("isession/rsession/state_query/datasets/"+ds_name+"."+format)
             if r.status_code == 200:
-                if len()
-                res.append((ds_name, format, r.content))
+                if len(t) == 3:
+                    out_format = t[2]
+                else:
+                    out_format = "bytearray"
+                if out_format == "dataframe":
+                    # Convert
+                    if format == "csv":
+                        # Obtain pd.DataFrame from CSV
+                        d = pd.read_csv(io.BytesIO(r.content))
+                elif out_format == "bytearray":
+                    d = r.content
+                res.append((ds_name, format, d))
         return res
 
     # --------------- SYNTAX FUNCTIONS ---------------

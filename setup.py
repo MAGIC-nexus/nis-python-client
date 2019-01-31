@@ -19,8 +19,8 @@
 #
 # INSTALL   ------------------------------------------------------------------------------
 #
-# PyPI test: pip install --index-url https://test.pypi.org/simple/ --upgrade nexinfosys
-# PyPI     : pip install --upgrade nexinfosys
+# PyPI test: pip install --index-url https://test.pypi.org/simple/ --upgrade nexinfosys-client
+# PyPI     : pip install --upgrade nexinfosys-client
 # No PyPI  : pip install -e <local path where "setup.py" (this file) is located>
 #
 
@@ -29,7 +29,7 @@ from setuptools import setup
 
 setup(
     name='nexinfosys-client',
-    version='0.7',
+    version='0.12',
     packages=['nexinfosys'],
     install_requires=['requests', 'pandas', 'webdavclient'],
     python_requires='>=3.6',
