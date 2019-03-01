@@ -14,6 +14,9 @@ class RequestsClient:
         if get_action.startswith("http"):
             url = get_action
         else:
+            # Remove prefix if matches the end
+            if get_action.startswith("/nis_api/"):
+                get_action = get_action[len("/nis_api/"):]
             url = self._base_url + get_action
         r = requests.get(url, cookies=self._cookies, verify=self._verify)
         if len(r.cookies.list_domains()) > 0:

@@ -27,6 +27,13 @@ class NISClientDatasetFormat(Enum):
     XLSX = 2,
     GML = 3,
     GRAPH_ML = 4,
+    VISJS = 5,
+    OWL = 6,
+    RDF_XML = 7,
+    KMZ = 8,
+    KML = 9,
+    GEOJSON = 10,
+    JSON = 11
 
 
 class NISClientOutputFormat(Enum):
@@ -194,7 +201,7 @@ class NISClient:
         self._dataframe_names.clear()
         self._dataframes.clear()
 
-    def load_workbook(self, fname, user, password):
+    def load_workbook(self, fname, user=None, password=None):
         """
 
         :param fname:
@@ -322,6 +329,34 @@ class NISClient:
         else:
             raise Exception("Could not retrieve the available datasets")
 
+    def download_results(self, datasets: List[Tuple[str, NISClientOutputFormat]]):
+        """
+        Download one or more results in the specified format
+        :param datasets:
+        :return:
+        """
+        res = []
+        for t in datasets:
+            if isinstance(t, str):
+                url = t
+            else:
+                url = t[0]
+            r = self._req_client.get(url)
+            if r.status_code == 200:
+                if isinstance(t, tuple) and len(t) == 2:
+                    out_format = t[1]
+                else:
+                    out_format = "bytearray"
+                if out_format == "dataframe":
+                    # Convert
+                    if format == "csv":
+                        # Obtain pd.DataFrame from CSV
+                        d = pd.read_csv(io.BytesIO(r.content))
+                elif out_format == "bytearray":
+                    d = r.content
+                res.append(d)
+        return res
+
     def query_datasets(self, datasets: List[Tuple[str, NISClientDatasetFormat, NISClientOutputFormat]]):
         """
         Obtain one or more datasets in the specified format
@@ -332,7 +367,7 @@ class NISClient:
         for t in datasets:
             ds_name = t[0]
             ds_format = t[1]
-            format = "csv"
+            format = ds_format.lower()
             r = self._req_client.get("isession/rsession/state_query/datasets/"+ds_name+"."+format)
             if r.status_code == 200:
                 if len(t) == 3:

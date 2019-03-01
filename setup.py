@@ -29,7 +29,7 @@ from setuptools import setup
 
 setup(
     name='nexinfosys-client',
-    version='0.12',
+    version='0.14',
     packages=['nexinfosys'],
     install_requires=['requests', 'pandas', 'webdavclient'],
     python_requires='>=3.6',
