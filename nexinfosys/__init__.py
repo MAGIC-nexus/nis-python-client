@@ -1,2 +1,2 @@
 
-from .client import NISClient
+from .client import NISClient, display_visjs_jupyterlab
