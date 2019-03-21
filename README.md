@@ -7,9 +7,14 @@ inside project MAGIC (H2020 grant 689669).
 
 ## Getting started
 
+### Install client (currently in pip development repository)
+```bash
+pip install --index-url https://test.pypi.org/simple/ nexinfosys-client
+```
+
 ### Basic Usage
 ```python
-from nis import NISClient
+from nexinfosys import NISClient
 
 c = NISClient("http://localhost:5000/nis_api") # Construct client
 c.login("test_user")  # Login, using test user
