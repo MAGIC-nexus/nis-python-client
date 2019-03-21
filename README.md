@@ -7,7 +7,7 @@ inside project MAGIC (H2020 grant 689669).
 
 ## Getting started
 
-### Install client (currently in pip development repository)
+### Install client (currently in pypi test repository)
 ```bash
 pip install --index-url https://test.pypi.org/simple/ nexinfosys-client
 ```
