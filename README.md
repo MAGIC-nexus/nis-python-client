@@ -7,7 +7,12 @@ inside project MAGIC (H2020 grant 689669).
 
 ## Getting started
 
-### Install client (currently in pypi test repository)
+### Prerequisites
+
+* Python 3.x
+* A NIS backend instance has to be running and accessible. The URL of the API is the required parameter for the construction of the client
+
+### Installing (currently in pypi test repository)
 ```bash
 pip install --index-url https://test.pypi.org/simple/ nexinfosys-client
 ```
@@ -44,15 +49,6 @@ c.close_session()
 # Logout
 c.logout()
 ```
-
-### Prerequisites
-
-* Python 3.x
-* A NIS backend instance has to be running and accessible. The URL of the API is the required parameter for the construction of the client
-
-### Installing
-
-pip install nis-client
 
 ## Authors
 
