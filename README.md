@@ -10,11 +10,11 @@ inside project MAGIC (H2020 grant 689669).
 ### Prerequisites
 
 * Python 3.x
-* A NIS backend instance has to be running and accessible. The URL of the API is the required parameter for the construction of the client
+* A NIS backend instance has to be running and accessible. The URL of the API endpoint is the required parameter for the construction of the client. See the example in "Basic Usage" section below. For instructions on executing **nis-backend** please check [README.md](https://github.com/MAGIC-nexus/nis-backend/blob/develop/README.md){:target="_blank"} at Github.
 
-### Installing (currently in pypi test repository)
+### Installing 
 ```bash
-pip install --index-url https://test.pypi.org/simple/ nexinfosys-client
+pip install nexinfosys-client
 ```
 
 ### Basic Usage

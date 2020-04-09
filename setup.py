@@ -26,17 +26,24 @@
 
 
 from setuptools import setup
+from os import path
+
+this_directory = path.abspath(path.dirname(__file__))
+with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
 
 setup(
     name='nexinfosys-client',
-    version='0.16',
+    version='0.18',
     packages=['nexinfosys'],
-    install_requires=['requests', 'pandas', 'webdavclient'],
+    install_requires=['requests', 'pandas', 'webdavclient==1.0.8'],
     python_requires='>=3.6',
-    url='',
-    license='MIT',
-    author='rnebot',
+    url='https://github.com/MAGIC-nexus/nis-python-client',
+    license='BSD3',
+    author='Rafael Nebot - ITC, SA - DCCT',
     author_email='rnebot@itccanarias.org',
-    description='Python client to NIS backend'
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    description='Client to NIS backend'
 )
 
