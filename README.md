@@ -2,8 +2,8 @@
 
 A Python client package to operate with NIS-Backend
 
-NIS stands for Nexus Information System. It is a software system (a set of software components) being developed
-inside project MAGIC (H2020 grant 689669). 
+NIS stands for "Nexus Information System". It is a software system (a set of software components) developed
+as part of project "MAGIC" activities (<a href="https://cordis.europa.eu/project/id/689669">H2020 grant #689669</a>). NIS-Backend is the main component, an engine capable of interpreting and resolving MuSIASEM (sustainability, water-energy-food nexus, bioeconomic) models expressed using a DSL in spreadsheet form. For more information go to <a href="https://github.com/MAGIC-nexus/nis-backend" target="_blank">nis-backend</a> repository at Github.
 
 ## Getting started
 
