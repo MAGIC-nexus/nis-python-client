@@ -3,11 +3,12 @@ Client to NIS Backend
 """
 
 import io
+import json
 import mimetypes
 import tempfile
 import urllib
 from urllib.parse import urlparse
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 from enum import Enum
 import pandas as pd
 import xlrd
@@ -65,6 +66,21 @@ def load_dataset(location: str=None):
             df = pd.read_excel(data)
 
     return df
+
+
+def display_dashboard(height, unique_name=None):
+    """
+    Once a case study has been submitted:
+    * Obtain the parameters
+    * Obtain the scenarios and parameter values
+    * Create a display area for controls, with:
+      - A dropdown to select scenarios
+      - A control per parameter
+      - A "recalculate" button
+      - A view per dataset of intereset
+        - pivottablejs. from pivottablejs import pivot_ui, pivot_ui(<dataframe>)
+    """
+    pass
 
 
 def display_visjs_jupyterlab(data, height, unique_name=None):
@@ -167,6 +183,8 @@ class NISClient:
     def dataframe_names(self):
         return self._dataframe_names
 
+    # --------------- CHECK BACKEND ---------------
+
     def check_backend_available(self):
         # TODO Just check that there is a NIS backend at URL self._url. Use requests
         r = self._req_client.get("test")
@@ -174,6 +192,8 @@ class NISClient:
             return "hello" in r.json()
         else:
             return False
+
+    # --------------- LOGIN, SESSION ---------------
 
     def login(self, user: str="test_user", api_key: str=None):
         if self._state == NISClientState.LOGGED_IN:
@@ -278,35 +298,40 @@ class NISClient:
 
         return self._state == NISClientState.LOGGED_IN
 
+    # --------------- SUBMISSION PREPARATION ---------------
+
     def reset_commands(self):
         self._dataframe_names.clear()
         self._dataframes.clear()
 
-    def load_workbook(self, fname, user=None, password=None):
+    def load_workbook(self, fname, wv_user=None, wv_password=None, wv_host_name=None):
         """
 
         :param fname:
-        :param user: In case of use of Nextcloud, user name
-        :param password: In case of use of Nextcloud, password
+        :param wv_user: In case of use of WebDav server, user name
+        :param wv_password: In case of use of WebDav server, password
+        :param wv_host_name: In case of use of WebDav server, host name
         :return: Number of added DataFrames
         """
         # Load a XLSX workbook into memory, as dataframes
         pr = urlparse(fname)
         if pr.scheme != "":
             # Load from remote site
-            if pr.netloc.lower() == "nextcloud.data.magic-nexus.eu":
+            if not wv_host_name:
+                wv_host_name = "nextcloud.data.magic-nexus.eu"
+            if pr.netloc.lower() == wv_host_name:
                 # WebDAV
                 parts = fname.split("/")
                 for i, p in enumerate(parts):
-                    if p == "nextcloud.data.magic-nexus.eu":
+                    if p == wv_host_name:
                         url = "/".join(parts[:i+1]) + "/"
                         fname = "/" + "/".join(parts[i+1:])
                         break
 
                 options = {
                     "webdav_hostname": url,
-                    "webdav_login": user,
-                    "webdav_password": password
+                    "webdav_login": wv_user,
+                    "webdav_password": wv_password
                 }
                 client = wc.Client(options)
                 with tempfile.NamedTemporaryFile(delete=True) as temp:
@@ -366,6 +391,38 @@ class NISClient:
         self._dataframes.append(df)
         self._dataframe_names(name)
 
+    def get_external_datasets(self) -> Dict[str, Tuple[str, str]]:
+        """
+        Obtain a list of datasets usable in DatasetQry command
+
+        :return: Dict(dataset_code, (source, dataset_description))
+        """
+        pass
+
+    def get_external_dataset_structure(self, dataset_code) -> Tuple[Dict[str, List[str]], List[str]]:
+        """
+        Obtain the dimensions
+
+        :param dataset_code:
+        :return: Tuple with: Dimensions in dictionary (dim_name, list of codes), List of measure names
+        """
+        pass
+
+    def get_datasetqry_dataframe(self, dataset_code, filter, out_dimensions, out_measures: List[Tuple[str, str, str]], out_dataset_name) -> pd.DataFrame:
+        """
+        Obtain a pd.DataFrame with a DatasetQry command
+
+        :param dataset_code: code of the external dataset to use as input
+        :param filter: dictionary with dimension name and list of codes passing the filter
+        :param out_dimensions: List of dimensions in the output
+        :param out_measures: List of measures in the output dataset. Each measure: aggregation function, measure to aggregate, result measure name
+        :param out_dataset_name: Name of the output dataset
+        :return: pd.DataFrame compatible with NIS format (append_command method can be invoked immediately, then submit method and the "after submission" methods to obtain the resulting dataset)
+        """
+        pass
+
+    # --------------- SUBMISSION ---------------
+
     def submit(self) -> List:
         if self._state == NISClientState.LOGGED_OUT:
             raise Exception("Not logged in. Call 'login' first, then 'open_session'")
@@ -392,6 +449,66 @@ class NISClient:
                 return d["issues"]
         else:
             return []
+
+    # --------------- AFTER SUBMISSION ---------------
+
+    def query_parameters(self):
+        """
+        Return the parameters.
+        For each parameter return: name, type (Number, Code, Boolean, String) and the domain (range for Number, list of codes for Code)
+
+        :return:
+        """
+        if self._state == NISClientState.LOGGED_OUT:
+            raise Exception("Not logged in. Call 'login' first, then 'open_session' and 'submit'")
+        elif self._state == NISClientState.LOGGED_IN:
+            raise Exception("Call 'open_session' before querying for available parameters")
+
+        # Obtain a list of parameters
+        r = self._req_client.get("isession/rsession/state_query/parameters")
+        if r.status_code == 200:
+            return r.json()
+        else:
+            raise Exception("Could not retrieve the available parameters")
+
+    def query_scenarios(self):
+        """
+        Return the list of scenarios and their parameters
+
+        :return:
+        """
+        if self._state == NISClientState.LOGGED_OUT:
+            raise Exception("Not logged in. Call 'login' first, then 'open_session' and 'submit'")
+        elif self._state == NISClientState.LOGGED_IN:
+            raise Exception("Call 'open_session' before querying for available scenarios")
+
+        # Obtain a list of parameters
+        r = self._req_client.get("isession/rsession/state_query/scenarios")
+        if r.status_code == 200:
+            return r.json()
+        else:
+            raise Exception("Could not retrieve the available scenarios")
+
+    def recalculate(self, parameters: dict):
+        """
+        Once a case study has been submitted, recalculate (RESUBMIT?) with new parameter values
+
+        :param parameters:
+        :return:
+        """
+        if self._state == NISClientState.LOGGED_OUT:
+            raise Exception("Not logged in. Call 'login' first, then 'open_session' and 'submit'")
+        elif self._state == NISClientState.LOGGED_IN:
+            raise Exception("Call 'open_session' before resubmitting a new scenario")
+
+        # Pass the dictionary of parameters
+        r = self._req_client.put("isession/rsession/state_query/parameters", data=json.dumps(parameters))
+        if r.status_code == 200:
+            d = r.json()
+            if "issues" in d:
+                return d["issues"]
+        else:
+            raise Exception("Could not recalculate")
 
     def query_available_datasets(self, filter: str=None):
         if self._state == NISClientState.LOGGED_OUT:

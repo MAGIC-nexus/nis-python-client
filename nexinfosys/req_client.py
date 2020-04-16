@@ -40,12 +40,16 @@ class RequestsClient:
         r.data = r.content
         return r
 
-    def put(self, put_action, data: dict):
+    def put(self, put_action, data: dict, content_type: str=None):
         if put_action.startswith("http"):
             url = put_action
         else:
             url = self._base_url + put_action
-        r = requests.put(url, data, cookies=self._cookies, verify=self._verify)
+        if content_type:
+            headers = {"Content-Type": content_type}
+        else:
+            headers = {}
+        r = requests.put(url, data, cookies=self._cookies, headers=headers, verify=self._verify)
         if len(r.cookies.list_domains()) > 0:
             dom1 = r.cookies.list_domains()[0]
             self._cookies = r.cookies.get_dict()
