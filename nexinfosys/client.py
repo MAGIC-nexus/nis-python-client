@@ -389,7 +389,7 @@ class NISClient:
             raise Exception("'df' parameter must be a Pandas DataFrame")
 
         self._dataframes.append(df)
-        self._dataframe_names(name)
+        self._dataframe_names.append(name)
 
     def get_external_datasets(self) -> Dict[str, Tuple[str, str]]:
         """
