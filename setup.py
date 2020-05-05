@@ -33,7 +33,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    version='0.21',
+    version='0.22',
     name='nexinfosys-client',
     packages=['nexinfosys'],
     install_requires=['requests', 'pandas', 'webdavclient==1.0.8'],
