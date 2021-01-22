@@ -1,3 +1,4 @@
+# pip install nexinfosys-client
 from nexinfosys import NISClient
 
 # IMPORTANT: A "NIS backend" instance must be running at some URL. In this example, it is available at the local
@@ -11,7 +12,7 @@ c.login()
 c.open_session()
 # Load a workbook
 fname = "../input_files/08_caso_energia_eu_new_commands.xlsx"
-fname = "/home/rnebot/GoogleDrive/AA_MAGIC/nis-backend/backend_tests/z_input_files/v2/Biofuel_NIS.xlsx"
+fname = "../z_input_files/v2/Biofuel_NIS.xlsx"
 c.load_workbook(fname)
 # Submit the workbook (execute, return a list of issues, if empty or no issues with type==3, successful execution)
 r = c.submit()

@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 
+# pip install nexinfosys-client
 from nexinfosys import NISClient
+# Create NIS client
 c = NISClient("https://one.nis.magic-nexus.eu/nis_api")
-
-print("NISClient created")
+# Login
 c.login("test_user")
-print("Logged in")
+# Open session
 c.open_session()
-print("Session opened")
+# Prepare a workbook for submission. Take it from the document repository of the project
 fname = "https://nextcloud.data.magic-nexus.eu/remote.php/webdav/NIS_beta/CS_format_examples/08_caso_energia_eu_new_commands.xlsx"
 n = c.load_workbook(fname, "", "")
-print("N worksheets: "+str(n))
+# Submit to the backend
 r = c.submit()
-print("Returned from submit")
+# Check issues
 success = sum([i.type==3 for i in r]) == 0
 for i in r:  # Print issues
     print(str(i))
